@@ -1,43 +1,35 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Board, BoardStatus } from './board.model';
+import { BoardStatus } from './board-status.enum';
 import { v1 as uuid } from 'uuid';
 import { CreateBoardDto } from './dto/create-board.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { BoardRepository } from './board.repository';
+import { Board } from './board.entity';
 @Injectable()
 export class BoardsService {
-  private boards: Board[] = [];
+  //Repository Inhjection
+  constructor(
+    @InjectRepository(BoardRepository)
+    private boardRepository: BoardRepository,
+  ) {}
 
-  getAllBoards(): Board[] {
-    return this.boards;
-  }
-  getBoardById(id: string): Board {
-    const found = this.boards.find((board) => board.id === id);
-
-    if (!found) {
-      throw new NotFoundException(`Can't find Board with id ${id}`);
-    }
-    return found;
+  getAllBoards() {
+    return this.boardRepository.getAllBoards();
   }
 
-  createBoard(createBoardDto: CreateBoardDto): Board {
-    const { title, description } = createBoardDto;
-    const board: Board = {
-      title,
-      description,
-      id: uuid(),
-      status: BoardStatus.PUBLIC,
-    };
-    this.boards.push(board);
-    return board;
+  getBoardById(id: number): Promise<Board> {
+    return this.boardRepository.getBoardById(id);
   }
-  deleteById(id: string): Board {
-    const board = this.getBoardById(id);
-    this.boards = this.boards.filter((board) => board.id !== id);
-    return board;
-  }
-  updateBoardStatus(id: string, status: BoardStatus): Board {
-    const board = this.getBoardById(id);
-    board.status = status;
 
-    return board;
+  createBoard(createBoardDto: CreateBoardDto): Promise<Board> {
+    return this.boardRepository.createBoard(createBoardDto);
+  }
+
+  deleteBoard(id: number): Promise<void> {
+    return this.boardRepository.deleteBoard(id);
+  }
+
+  updateBoardStatus(id: number, status: BoardStatus) {
+    return this.boardRepository.updateBoardStatus(id, status);
   }
 }
