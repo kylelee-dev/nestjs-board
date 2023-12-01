@@ -39,12 +39,12 @@ export class BoardRepository extends Repository<Board> {
     return board;
   }
 
-  async deleteBoard(id: number): Promise<void> {
-    const result = await this.delete(id);
-    if (result.affected === 0) {
-      throw new NotFoundException(`Can't find Board with id ${id}`);
-    }
-  }
+  // async deleteBoard(id: number, user: User): Promise<void> {
+  //   const result = await this.delete({ id, user });
+  //   if (result.affected === 0) {
+  //     throw new NotFoundException(`Can't find Board with id ${id}`);
+  //   }
+  // }
 
   async updateBoardStatus(id: number, status: BoardStatus): Promise<Board> {
     const board = await this.getBoardById(id);

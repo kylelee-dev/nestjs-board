@@ -35,6 +35,11 @@ export class BoardsController {
     return this.boardsService.getAllBoards();
   }
 
+  @Get('/user')
+  getAllBoardsForUser(@GetUser() user: User): Promise<Board[]> {
+    return this.boardsService.getAllBoardsForUser(user);
+  }
+
   @Get('/:id')
   getBoardById(@Param('id', ParseIntPipe) id: number): Promise<Board> {
     return this.boardsService.getBoardById(id);
@@ -50,8 +55,11 @@ export class BoardsController {
   }
 
   @Delete('/:id')
-  deleteBoard(@Param('id', ParseIntPipe) id: number): Promise<void> {
-    return this.boardsService.deleteBoard(id);
+  deleteBoard(
+    @Param('id', ParseIntPipe) id: number,
+    @GetUser() user: User,
+  ): Promise<string> {
+    return this.boardsService.deleteBoard(id, user);
   }
 
   @Patch('/:id/status')
