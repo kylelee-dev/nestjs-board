@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  Logger,
   Param,
   ParseIntPipe,
   Patch,
@@ -27,6 +28,7 @@ export class BoardsController {
   //   constructor(boardsService: BoardsService) {
   //     this.boardsService = boardsService;
   //   }
+  private logger = new Logger('Boards');
   constructor(private boardsService: BoardsService) {}
   // implicitly declare 'boardsService' as class property
 
@@ -37,6 +39,7 @@ export class BoardsController {
 
   @Get('/user')
   getAllBoardsForUser(@GetUser() user: User): Promise<Board[]> {
+    this.logger.verbose(`User ${user.username} trying to get all boards`);
     return this.boardsService.getAllBoardsForUser(user);
   }
 
@@ -51,6 +54,11 @@ export class BoardsController {
     @Body() createBoardDto: CreateBoardDto,
     @GetUser() user: User,
   ): Promise<Board> {
+    this.logger.verbose(
+      `User ${user.username} creating a new board. Payload: ${JSON.stringify(
+        createBoardDto,
+      )}`,
+    );
     return this.boardsService.createBoard(createBoardDto, user);
   }
 
